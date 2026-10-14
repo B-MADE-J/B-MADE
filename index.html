@@ -1,1 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>keycap</title>
+<meta charset="UTF-8">
+<base target="_top">
 
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#000000;
+  --accent:#00ff99;
+
+  --key1:#d9d9d9;
+  --key2:#9a9a9a;
+
+  --shadow:#ffffff;
+}
+
+# =========================
+   기본 초기화 + 드래그 방지
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+
+  user-select:none;
+  -webkit-user-select:none;
+  -ms-user-select:none;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial, sans-serif;
+
+  min-height:100vh;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+/* =========================
+   제목 / 카운터
+========================= */
+
+h1{
+  margin-bottom:15px;
+}
+
+#count{
+  font-size:24px;
+  color:var(--accent);
+  margin-bottom:20px;
+}
+
+/* =========================
+   키보드 레이아웃
+========================= */
+
+.keyboard{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* =========================
+   키캡 스타일
+========================= */
+
+.key{
+  position:relative;
+
+  width:300px;
+  height:300px;
+
+  
+
+  overflow:visible;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:transparent;
+  touch-action: none;
+}
+
+/* 키캡 하이라이트 */
+.key::before{
+  display:done;
+}
+
+.key span{
+  position:relative;
+  z-index:5;
+}
+
+.key img{
+  pointer-events:none;
+  -webkit-user-drag:none;
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+  left:0%;
+  
+
+  object-fit:contain;
+
+  transform:scale(4.5);
+
+  z-index:1;
+}
+
+.key span{
+  position:relative;
+  z-index:2;
+
+  color:white;
+  font-size:42px;
+  font-weight:bold;
+
+  text-shadow:0 0 8px white;
+}
+
+/* =========================
+   클릭 효과
+========================= */
+
+.pressed{
+  transform:translateY(10px);
+}
+
+
+
+
+
+/* =========================
+   버튼
+========================= */
+
+button{
+  margin-top:25px;
+
+  padding:12px 25px;
+
+  border:none;
+  border-radius:10px;
+
+  background:var(--accent);
+  color:white;
+
+  cursor:pointer;
+
+  font-weight:bold;
+
+  box-shadow:0 6px 15px rgba(0,0,0,.3);
+
+  transition:.2s;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
+
+/* =========================
+   모바일 대응
+========================= */
+
+@media (max-width:500px){
+  .keyboard{
+    grid-template-columns:repeat(2,120px);
+  }
+
+  .key{
+    width:120px;
+    height:120px;
+    font-size:36px;
+  }
+}
+
+
+.particle{
+    position:absolute;
+
+    
+
+    pointer-events:none;
+
+    z-index:100;
+
+    transform-origin:center;
+}
+.slider{
+  width:100%;
+
+  overflow:hidden;
+}
+
+.pages{
+  display:flex;
+  transition:transform .35s ease;
+}
+
+.page{
+  min-width:100%;
+  height:400px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  position:relative;
+}
+#background{
+  position:fixed;
+
+  top:0;
+  left:0;
+
+  width:100vw;
+  height:100vh;
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+
+  z-index:-10;
+}
+.key23 img{
+  transform:scale(3);
+}
+</style>
+</head>
+
+<body>
+
+
+<div id="background"></div>
+
+<div id="count">타격 수 : 0</div>
+
+<div class="slider">
+<div class="pages">
+<div class="page">
+<div class="keyboard">
+
+  <div class="key" data-key="1" draggable="false" style="touch-action:none;">
+    <img src="https://hakgeo212543-hub.github.io/keycap2/spike.png" alt="keycap">
+    
+  </div>
+
+  
+
+</div>
+</div>
+<div class="page">
+<div class="keyboard">
+
+  <!-- 2번 페이지: 6장 애니메이션 -->
+  <div class="key key23" data-key="2" data-animation="2" draggable="false" style="touch-action:none;">
+    <img src="https://hakgeo212543-hub.github.io/keycap2/angel_01_535x466.png" alt="keycap">
+  </div>
+
+  
+
+</div>
+</div>
+<div class="page">
+<div class="keyboard">
+
+  <!-- 3번 페이지: 6장 애니메이션 -->
+  <div class="key key23" data-key="3" data-animation="3" draggable="false" style="touch-action:none;">
+    <img src="https://hakgeo212543-hub.github.io/keycap2/devil_01_535x466.png" alt="keycap">
+  </div>
+
+  
+
+</div>
+</div>
+</div>
+</div>
+<div><button value="배경음악" onclick="play_playBGM()">배경음악</button></div>
+
+
+
+<script>
+  const GITHUB = "https://hakgeo212543-hub.github.io/keycap2";
+  let BGM = false;
+
+/* =========================
+   🔊 Base64 MP3 (여기에 넣음)
+   ========================= */
+const crack = new Audio(`${GITHUB}/cr.mp3`);
+
+
+ 
+/* =========================
+   🎧 사운드 (연타 대응용)
+   ========================= */
+const bgm = new Audio(`${GITHUB}/bgm.mp3`);
+const clickSound = new Audio(`${GITHUB}/click_s.wav`);
+
+bgm.loop = true;
+
+function play_playBGM(){
+
+  if(!BGM){
+
+    bgm.currentTime = 0;
+
+    bgm.play();
+
+    BGM = true;
+  }else{
+    bgm.pause();
+    BGM = false;
+  }
+}
+
+function playSound(name){
+
+  if(name === "click"){
+
+    const sound = clickSound.cloneNode();
+
+    sound.currentTime = 0;
+
+    sound.play();
+
+  }
+}
+
+/* =========================
+   🔢 게임 상태
+   ========================= */
+
+
+let total = 0;
+let destroyMode = false;
+
+const hitCount = {
+  1:0,2:0,3:0,4:0
+};
+
+/* =========================
+   ⌨️ 키 이벤트
+   ========================= */
+let touches = new Set();
+
+const animations = {
+  2: [
+    `${GITHUB}/angel_01_535x466.png`,
+    `${GITHUB}/angel_02_535x466.png`,
+    `${GITHUB}/angel_03_535x466.png`,
+    `${GITHUB}/angel_04_535x466.png`,
+    `${GITHUB}/angel_05_535x466.png`,
+    `${GITHUB}/angel_06_535x466.png`
+  ],
+
+  3: [
+    `${GITHUB}/devil_01_535x466.png`,
+    `${GITHUB}/devil_02_535x466.png`,
+    `${GITHUB}/devil_03_535x466.png`,
+    `${GITHUB}/devil_04_535x466.png`,
+    `${GITHUB}/devil_05_535x466.png`,
+    `${GITHUB}/devil_06_535x466.png`
+  ]
+};
+
+function playKeyAnimation(key){
+
+  const animationNumber = key.dataset.animation;
+
+  if(!animationNumber) return;
+
+  const frames = animations[animationNumber];
+
+  if(!frames) return;
+
+  const img = key.querySelector("img");
+
+  let frame = 0;
+
+  // 이전 애니메이션 중지용
+  key.animationPlaying = true;
+
+  function nextFrame(){
+
+    // 손가락을 뗐다면 중지
+    if(!key.animationPlaying) return;
+
+    img.src = frames[frame];
+
+    frame++;
+
+    if(frame < frames.length){
+
+      key.animationTimer = setTimeout(nextFrame, 80);
+
+    }
+  }
+
+  nextFrame();
+}
+
+document.querySelectorAll(".key").forEach(key => {
+
+  key.addEventListener("touchstart", (e)=>{
+
+    e.preventDefault();
+
+    if(touches.size === 0){
+
+      total++;
+
+      hitCount[key.dataset.key]++;
+
+      document.getElementById("count").innerText =
+        "타격 수 : " + total;
+
+
+      if(key.dataset.key === "1"){
+        spawnParticle(key);
+        playSound("click");
+      }
+      else{
+        crack.currentTime = 0;
+        crack.play();
+      }
+      playKeyAnimation(key);
+      key.classList.add("pressed");
+    }
+
+
+    for(const touch of e.changedTouches){
+      touches.add(touch.identifier);
+    }
+
+  }, {passive:false});
+
+
+  key.addEventListener("touchmove", (e)=>{
+
+    e.preventDefault();
+
+    const rect = key.getBoundingClientRect();
+
+    for(const touch of e.changedTouches){
+
+      if(
+        touch.clientX < rect.left ||
+        touch.clientX > rect.right ||
+        touch.clientY < rect.top ||
+        touch.clientY > rect.bottom
+      ){
+        touches.delete(touch.identifier);
+        crack.pause();
+      }
+
+    }
+
+
+    if(touches.size === 0){
+      key.classList.remove("pressed");
+    }
+
+  }, {passive:false});
+
+
+  key.addEventListener("touchend", (e)=>{
+    crack.pause();
+    for(const touch of e.changedTouches){
+      touches.delete(touch.identifier);
+    }
+
+    if(touches.size === 0){
+
+      key.classList.remove("pressed");
+
+      // 애니메이션 중지
+      key.animationPlaying = false;
+
+      if(key.animationTimer){
+        clearTimeout(key.animationTimer);
+      }
+
+      // 첫 번째 이미지로 복귀
+      const animationNumber = key.dataset.animation;
+
+      if(animationNumber){
+
+        const frames = animations[animationNumber];
+
+        if(frames){
+          key.querySelector("img").src = frames[0];
+        }
+
+      }
+
+    }
+
+  });
+
+});
+
+
+
+function spawnParticle(key){
+
+    const p = document.createElement("img");
+    p.className = "particle";
+    p.src = `${GITHUB}/blood.png`;
+
+    const size = 8 + Math.random()*18;
+
+    p.style.width = size + "px";
+    p.style.height = size + "px";
+
+    let x = key.clientWidth/2 - size/2;
+    let y = key.clientHeight/2 - size/2;
+
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+
+    key.appendChild(p);
+
+    // 속도
+    const angle =
+    (-120 + Math.random()*60) * Math.PI / 180;
+    const speed = 10 + Math.random()*8;
+
+    let vx = Math.cos(angle) * speed;
+    let vy = Math.sin(angle) * speed;
+
+    const gravity = 0.65;
+
+    
+    function update(){
+
+        x += vx;
+        y += vy;
+
+        vy += gravity;
+
+        
+
+        const angleDeg = Math.atan2(vy, vx) * 180 / Math.PI -90;
+
+
+        p.style.transform =
+          `translate(${x-(key.clientWidth/2-size/2)}px,
+                     ${y-(key.clientHeight/2-size/2)}px)
+          rotate(${angleDeg}deg)`;
+
+        p.style.opacity = Math.max(0,1-y/600);
+
+        if(y < 700 && x > -300 && x < 700){
+
+            requestAnimationFrame(update);
+
+        }else{
+
+            p.remove();
+
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+let startX = 0;
+let startY = 0;
+let currentPage = 0;
+
+const background = document.getElementById("background");
+
+const backgrounds = [
+  `${GITHUB}/r_b.png`,
+  `${GITHUB}/b_r.png`,
+  `${GITHUB}/r_b.png`
+];
+
+function updateBackground(){
+  background.style.backgroundImage =
+    `url("${backgrounds[currentPage]}")`;
+}
+
+updateBackground();
+
+const slider = document.querySelector(".slider");
+const pages = document.querySelector(".pages");
+
+document.addEventListener("touchstart", (e) => {
+
+  if(e.target.closest(".key")){
+    return;
+  }
+
+  const touch = e.touches[0];
+
+  startX = touch.clientX;
+  startY = touch.clientY;
+
+}, {passive:false});
+
+document.addEventListener("touchend", (e) => {
+
+  if(e.target.closest(".key")){
+    return;
+  }
+
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - startX;
+  const diffY = touch.clientY - startY;
+
+  if(Math.abs(diffX) > Math.abs(diffY)){
+
+    if(Math.abs(diffX) > 50){
+
+      if(diffX < 0){
+
+        if(currentPage < 2){
+          currentPage++;
+        }
+
+      }else{
+
+        if(currentPage > 0){
+          currentPage--;
+        }
+
+      }
+
+      pages.style.transform =
+        `translateX(-${currentPage * 100}%)`;
+
+      updateBackground();
+    }
+  }
+
+}, {passive:false});
+</script>
+
+</body>
+</html>
