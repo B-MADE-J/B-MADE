@@ -10,20 +10,67 @@
   <link href="https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink: #29243b;
-      --muted: #817b91;
-      --accent: #8c75f5;
-      --accent-dark: #7159df;
-      --surface: rgba(255,255,255,.82);
+      --ink: #ffffff;
+      --muted: #e2dced;
+      --accent: #d5c8ff;
+      --accent-dark: #eee8ff;
       --line: rgba(90,75,130,.12);
-      --shadow: 0 22px 60px rgba(65,48,112,.13);
     }
+
+    /* 밝은 배경 페이지에서는 가독성을 위해 글씨를 어둡게 전환 */
+    body.light-page {
+      --ink: #29243a;
+      --muted: #625b70;
+      --accent: #7862c9;
+      --accent-dark: #55418f;
+      --line: rgba(48, 38, 75, .22);
+    }
+    body.light-page .brand { color: #55418f; }
+    body.light-page .brand-mark {
+      background: rgba(65, 49, 110, .10);
+      box-shadow: inset 0 0 0 1px rgba(65, 49, 110, .16);
+    }
+    /* 모든 페이지에서 동일한 불투명 배경과 테두리 없는 버튼 사용 */
+    .sound-button {
+      color: #29243a;
+      background: #ffffff;
+      border: 0;
+    }
+    .sound-button[aria-pressed="true"] {
+      color: #ffffff;
+      background: #5b469b;
+    }
+    /* 천사 페이지의 좌우 이동 버튼도 양쪽 페이지와 동일한 스타일 */
+    body.light-page .nav-arrow {
+      color: #29243a;
+      background: #ffffff;
+      border-color: rgba(90,75,130,.12);
+    }
+    /* 현재 페이지에서 이동할 수 있는 방향의 화살표를 항상 선명하게 표시 */
+    .nav-arrow:not(:disabled) {
+      color: #29243a;
+      opacity: 1;
+    }
+    body.light-page .nav-arrow:not(:disabled) {
+      color: #29243a;
+      opacity: 1;
+    }
+    body.light-page .counter {
+      background: rgba(255, 255, 255, .58);
+      border-color: rgba(48, 38, 75, .18);
+    }
+    body.light-page .counter-label { color: #554d66; }
+    body.light-page #count { color: #55418f; }
+    body.light-page .dot { background: rgba(48, 38, 75, .28); }
+    body.light-page .dot.active { background: #7862c9; }
+    body.light-page .footer { color: rgba(41, 36, 58, .72); }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { min-height: 100%; }
     body {
       min-height: 100vh;
-      padding: 28px 18px 36px;
+      min-height: 100svh;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -47,13 +94,13 @@
 
     .app {
       width: min(100%, 760px);
-      padding: clamp(22px, 5vw, 42px);
-      border: 1px solid rgba(255,255,255,.9);
-      border-radius: 32px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      padding: clamp(18px, 4vw, 42px);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       text-align: center;
     }
 
@@ -80,7 +127,7 @@
       width: 34px;
       height: 34px;
       border-radius: 11px;
-      background: #eeeaff;
+      background: rgba(255,255,255,.18);
       box-shadow: inset 0 0 0 1px rgba(140,117,245,.12);
     }
 
@@ -90,16 +137,15 @@
       gap: 8px;
       min-height: 40px;
       padding: 0 15px;
-      border: 1px solid var(--line);
+      border: 0;
       border-radius: 999px;
-      color: var(--ink);
-      background: #fff;
+      color: #29243a;
+      background: #ffffff;
       font: 600 13px 'Pretendard', sans-serif;
       cursor: pointer;
       transition: .2s ease;
     }
-    .sound-button:hover { transform: translateY(-2px); border-color: #c9bfff; }
-    .sound-button[aria-pressed="true"] { color: var(--accent-dark); background: #f0edff; }
+    .sound-button:hover { transform: translateY(-2px); }
 
     h1 {
       margin-bottom: 9px;
@@ -118,19 +164,20 @@
       gap: 10px;
       margin: 25px auto 4px;
       padding: 12px 20px;
-      border: 1px solid rgba(140,117,245,.15);
+      border: 1px solid rgba(255,255,255,.24);
       border-radius: 18px;
-      background: linear-gradient(135deg, #f3f0ff, #fff1f8);
+      background: rgba(24,19,43,.48);
     }
-    .counter-label { color: var(--muted); font-size: 13px; font-weight: 600; }
+    .counter-label { color: rgba(255,255,255,.78); font-size: 13px; font-weight: 600; }
     #count { color: var(--accent-dark); font: 25px 'Jua', sans-serif; font-variant-numeric: tabular-nums; }
 
     .slider {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 8px;
       overflow: hidden;
       border-radius: 24px;
       touch-action: pan-y;
+      overscroll-behavior-x: contain;
     }
     .pages {
       display: flex;
@@ -142,15 +189,18 @@
       display: flex;
       flex: 0 0 100%;
       min-width: 100%;
-      height: clamp(270px, 48vw, 390px);
+      height: clamp(250px, 48vw, 390px);
+      height: clamp(250px, min(48vw, 52svh), 390px);
       align-items: center;
       justify-content: center;
     }
     .key {
       position: relative;
       display: flex;
-      width: min( min(70vw, 330px), 330px);
-      height: min( min(70vw, 330px), 330px);
+      width: min(70vw, 330px);
+      height: min(70vw, 330px);
+      max-width: 100%;
+      max-height: 100%;
       align-items: center;
       justify-content: center;
       overflow: visible;
@@ -211,11 +261,11 @@
       height: 8px;
       border: 0;
       border-radius: 20px;
-      background: #d9d4e8;
+      background: rgba(255,255,255,.48);
       cursor: pointer;
       transition: .25s ease;
     }
-    .dot.active { width: 23px; background: var(--accent); }
+    .dot.active { width: 23px; background: #d5c8ff; }
 
     .hint {
       margin-top: 18px;
@@ -224,21 +274,76 @@
     }
     .footer {
       margin-top: 28px;
-      color: #aaa4b7;
+      color: rgba(255,255,255,.76);
       font-size: 11px;
       letter-spacing: .5px;
     }
 
-    @media (max-width: 520px) {
-      body { padding: 14px 12px 22px; }
-      .app { padding: 22px 14px 25px; border-radius: 25px; }
-      .topline { margin-bottom: 23px; }
-      .brand { font-size: 19px; }
-      .sound-button { min-height: 36px; padding: 0 11px; font-size: 12px; }
-      .page { height: 300px; }
-      .key { width: min(75vw, 285px); height: min(75vw, 285px); }
-      .key img { transform: scale(1.7); }
-      .key.key23 img { transform: scale(1.35); }
+    /* Mobile-first layout */
+    @media (max-width: 600px) {
+      body {
+        justify-content: flex-start;
+        padding: max(10px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom));
+      }
+      .app {
+        width: 100%;
+        min-height: calc(100svh - max(10px, env(safe-area-inset-top)) - max(14px, env(safe-area-inset-bottom)));
+        padding: 18px 13px 20px;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        border: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .topline { margin-bottom: 18px; gap: 8px; }
+      .brand { gap: 7px; font-size: 18px; }
+      .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
+      .sound-button {
+        min-height: 42px;
+        padding: 0 12px;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      h1 { font-size: clamp(27px, 8vw, 35px); }
+      .subtitle { font-size: 13px; }
+      .counter { margin: 19px auto 0; padding: 10px 17px; }
+      #count { font-size: 23px; }
+      .page {
+        height: clamp(230px, 39svh, 330px);
+        min-height: 0;
+      }
+      .key {
+        width: min(76vw, 290px, 34svh);
+        height: min(76vw, 290px, 34svh);
+      }
+      .key img { transform: scale(1.65); }
+      .key.key23 img { transform: scale(1.3); }
+      .navigation { gap: 16px; margin-top: 0; }
+      .nav-arrow { width: 42px; height: 42px; font-size: 22px; }
+      .dot { width: 9px; height: 9px; padding: 0; }
+      .dot.active { width: 25px; }
+      .hint { margin-top: 14px; font-size: 11px; line-height: 1.5; }
+      .footer { margin-top: 18px; font-size: 10px; }
+    }
+
+    @media (max-width: 360px) {
+      .app { padding-left: 10px; padding-right: 10px; }
+      .brand { font-size: 16px; }
+      .sound-button { padding: 0 9px; font-size: 11px; }
+      .page { height: 235px; }
+      .key { width: 72vw; height: 72vw; }
+      .hint { max-width: 260px; margin-left: auto; margin-right: auto; }
+    }
+
+    @media (max-height: 680px) and (max-width: 600px) {
+      .app { justify-content: flex-start; }
+      .topline { margin-bottom: 12px; }
+      .counter { margin-top: 12px; }
+      .page { height: 220px; }
+      .hint { margin-top: 8px; }
+      .footer { margin-top: 10px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -302,186 +407,290 @@
   </main>
 
   <script>
+    "use strict";
+
     const GITHUB = "https://hakgeo212543-hub.github.io/keycap2";
-    const bgm = new Audio(`${GITHUB}/bgm.mp3`);
-    const crack = new Audio(`${GITHUB}/cr.mp3`);
-    const clickSound = new Audio(`${GITHUB}/click_s.wav`);
+    const ASSETS = {
+      bgm: `${GITHUB}/bgm.mp3`,
+      crack: `${GITHUB}/cr.mp3`,
+      click: `${GITHUB}/click_s.wav`,
+      particle: `${GITHUB}/blood.png`
+    };
+
+    const bgm = new Audio(ASSETS.bgm);
     bgm.loop = true;
+    bgm.preload = "auto";
+
     let bgmOn = false;
     let total = 0;
     let currentPage = 0;
-    let activePointers = new Set();
+    let swipeStart = null;
 
+    // 자주 사용하는 DOM 요소는 한 번만 찾아 재사용한다.
     const pages = document.querySelector(".pages");
+    const slider = document.querySelector(".slider");
     const background = document.getElementById("background");
     const count = document.getElementById("count");
-    const backgrounds = [`${GITHUB}/r_b.png`, `${GITHUB}/b_r.png`, `${GITHUB}/r_b.png`];
+    const soundButton = document.getElementById("soundButton");
+    const soundIcon = document.getElementById("soundIcon");
+    const soundText = document.getElementById("soundText");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const keys = Array.from(document.querySelectorAll(".key"));
+
+    const backgrounds = [
+      `${GITHUB}/r_b.png`,
+      `${GITHUB}/b_r.png`,
+      `${GITHUB}/r_b.png`
+    ];
 
     const animations = {
-      2: Array.from({length: 6}, (_, i) => `${GITHUB}/angel_0${i + 1}_535x466.png`),
-      3: Array.from({length: 6}, (_, i) => `${GITHUB}/devil_0${i + 1}_535x466.png`)
+      2: Array.from({ length: 6 }, (_, i) => `${GITHUB}/angel_0${i + 1}_535x466.png`),
+      3: Array.from({ length: 6 }, (_, i) => `${GITHUB}/devil_0${i + 1}_535x466.png`)
     };
 
-    function updatePage() {
-      pages.style.transform = `translateX(-${currentPage * 100}%)`;
-      background.style.backgroundImage = `url("${backgrounds[currentPage]}")`;
-      document.querySelectorAll(".dot").forEach((dot, i) => {
-        dot.classList.toggle("active", i === currentPage);
-        dot.setAttribute("aria-current", i === currentPage ? "page" : "false");
+    // 배경과 애니메이션 프레임을 미리 캐시에 넣어 첫 표시 지연을 줄인다.
+    function preloadImages(sources) {
+      sources.forEach(src => {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = src;
       });
-      document.getElementById("prevButton").disabled = currentPage === 0;
-      document.getElementById("nextButton").disabled = currentPage === 2;
+    }
+    preloadImages([...new Set([...backgrounds, ASSETS.particle, ...Object.values(animations).flat()])]);
+
+    function playOneShot(src, volume = 1) {
+      const sound = new Audio(src);
+      sound.volume = volume;
+      sound.preload = "auto";
+      sound.play().catch(error => {
+        console.warn("효과음을 재생할 수 없습니다.", error);
+      });
+      return sound;
+    }
+
+    function stopSound(sound) {
+      if (!sound) return;
+      sound.pause();
+      sound.currentTime = 0;
+    }
+
+    function updatePage() {
+      document.body.classList.toggle("light-page", currentPage === 1);
+      pages.style.transform = `translate3d(-${currentPage * 100}%, 0, 0)`;
+      background.style.backgroundImage = `url("${backgrounds[currentPage]}")`;
+
+      dots.forEach((dot, index) => {
+        const active = index === currentPage;
+        dot.classList.toggle("active", active);
+        dot.setAttribute("aria-current", active ? "page" : "false");
+      });
+
+      prevButton.disabled = currentPage === 0;
+      nextButton.disabled = currentPage === backgrounds.length - 1;
     }
 
     function goToPage(page) {
-      currentPage = Math.max(0, Math.min(2, page));
+      const nextPage = Math.max(0, Math.min(backgrounds.length - 1, page));
+      if (nextPage === currentPage) return;
+      currentPage = nextPage;
       updatePage();
     }
 
-    document.getElementById("prevButton").addEventListener("click", () => goToPage(currentPage - 1));
-    document.getElementById("nextButton").addEventListener("click", () => goToPage(currentPage + 1));
-    document.querySelectorAll(".dot").forEach(dot => {
+    prevButton.addEventListener("click", () => goToPage(currentPage - 1));
+    nextButton.addEventListener("click", () => goToPage(currentPage + 1));
+    dots.forEach(dot => {
       dot.addEventListener("click", () => goToPage(Number(dot.dataset.page)));
     });
 
-    document.getElementById("soundButton").addEventListener("click", async () => {
-      const button = document.getElementById("soundButton");
+    soundButton.addEventListener("click", async () => {
       try {
-        if (!bgmOn) {
-          await bgm.play();
-          bgmOn = true;
-        } else {
+        if (bgmOn) {
           bgm.pause();
           bgmOn = false;
+        } else {
+          await bgm.play();
+          bgmOn = true;
         }
-        button.setAttribute("aria-pressed", String(bgmOn));
-        document.getElementById("soundIcon").textContent = bgmOn ? "♫" : "♪";
-        document.getElementById("soundText").textContent = bgmOn ? "배경음악 끄기" : "배경음악 켜기";
+        soundButton.setAttribute("aria-pressed", String(bgmOn));
+        soundIcon.textContent = bgmOn ? "♫" : "♪";
+        soundText.textContent = bgmOn ? "배경음악 끄기" : "배경음악 켜기";
       } catch (error) {
+        bgmOn = false;
+        soundButton.setAttribute("aria-pressed", "false");
+        soundIcon.textContent = "♪";
+        soundText.textContent = "배경음악 켜기";
         console.warn("배경음악을 재생할 수 없습니다.", error);
       }
     });
 
     function playKeyAnimation(key) {
-      const animationNumber = key.dataset.animation;
-      if (!animationNumber) return;
-      const frames = animations[animationNumber];
-      const img = key.querySelector("img");
-      let frame = 0;
-      key.animationPlaying = true;
-      clearTimeout(key.animationTimer);
+      const frames = animations[key.dataset.animation];
+      if (!frames) return;
 
-      function nextFrame() {
-        if (!key.animationPlaying) return;
-        img.src = frames[frame];
-        frame += 1;
-        if (frame < frames.length) key.animationTimer = setTimeout(nextFrame, 80);
+      const image = key.querySelector("img");
+      const token = (key._animationToken || 0) + 1;
+      key._animationToken = token;
+      clearTimeout(key._animationTimer);
+
+      let frameIndex = 0;
+      function showNextFrame() {
+        if (!key._isActive || key._animationToken !== token) return;
+        image.src = frames[frameIndex++];
+        if (frameIndex < frames.length) {
+          key._animationTimer = setTimeout(showNextFrame, 80);
+        }
       }
-      nextFrame();
+      showNextFrame();
     }
 
     function stopKeyAnimation(key) {
-      key.animationPlaying = false;
-      clearTimeout(key.animationTimer);
-      const frames = animations[key.dataset.animation];
-      if (frames) key.querySelector("img").src = frames[0];
+      key._animationToken = (key._animationToken || 0) + 1;
+      clearTimeout(key._animationTimer);
+      const image = key.querySelector("img");
+      if (image && key._baseImageSrc) image.src = key._baseImageSrc;
       key.classList.remove("pressed");
     }
 
-    function playClickSound() {
-      const sound = clickSound.cloneNode();
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
+    function removeParticle(key, particle) {
+      if (particle._rafId) cancelAnimationFrame(particle._rafId);
+      key._particles.delete(particle);
+      particle.remove();
     }
 
     function spawnParticle(key) {
+      // 키캡마다 살아 있는 파티클을 최대 24개로 제한한다.
+      if (key._particles.size >= 24) {
+        removeParticle(key, key._particles.values().next().value);
+      }
+
       const particle = document.createElement("img");
       particle.className = "particle";
-      particle.src = `${GITHUB}/blood.png`;
+      particle.src = ASSETS.particle;
+      particle.alt = "";
+
       const size = 8 + Math.random() * 18;
-      let x = key.clientWidth / 2 - size / 2;
-      let y = key.clientHeight / 2 - size / 2;
+      const centerX = key.clientWidth / 2;
+      const centerY = key.clientHeight / 2;
+      let x = centerX - size / 2;
+      let y = centerY - size / 2;
+
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
       particle.style.left = `${x}px`;
       particle.style.top = `${y}px`;
       key.appendChild(particle);
+      key._particles.add(particle);
 
       const angle = (-120 + Math.random() * 60) * Math.PI / 180;
       let vx = Math.cos(angle) * (10 + Math.random() * 8);
       let vy = Math.sin(angle) * (10 + Math.random() * 8);
-      const gravity = .65;
+      const gravity = 0.65;
 
-      function update() {
+      function updateParticle() {
+        if (!particle.isConnected) {
+          key._particles.delete(particle);
+          return;
+        }
+
         x += vx;
         y += vy;
         vy += gravity;
-        particle.style.transform = `translate(${x - (key.clientWidth / 2 - size / 2)}px, ${y - (key.clientHeight / 2 - size / 2)}px) rotate(${Math.atan2(vy, vx) * 180 / Math.PI - 90}deg)`;
+        particle.style.transform = `translate(${x - (centerX - size / 2)}px, ${y - (centerY - size / 2)}px) rotate(${Math.atan2(vy, vx) * 180 / Math.PI - 90}deg)`;
         particle.style.opacity = String(Math.max(0, 1 - y / 600));
-        if (y < 700 && x > -300 && x < 700) requestAnimationFrame(update);
-        else particle.remove();
+
+        if (y < 700 && x > -300 && x < 700) {
+          particle._rafId = requestAnimationFrame(updateParticle);
+        } else {
+          removeParticle(key, particle);
+        }
       }
-      requestAnimationFrame(update);
+      particle._rafId = requestAnimationFrame(updateParticle);
     }
 
     function pressKey(key) {
-      if (key.dataset.isPressed === "true") return;
-      key.dataset.isPressed = "true";
+      if (key._isActive) return;
+      key._isActive = true;
       total += 1;
       count.textContent = total.toLocaleString("ko-KR");
       key.classList.add("pressed");
       playKeyAnimation(key);
 
-      if (key.dataset.key === "1") {
-        spawnParticle(key);
-        playClickSound();
-      } else {
-        crack.currentTime = 0;
-        crack.play().catch(() => {});
-      }
+      key._activeSound = key.dataset.key === "1"
+        ? (spawnParticle(key), playOneShot(ASSETS.click))
+        : playOneShot(ASSETS.crack);
     }
 
     function releaseKey(key) {
-      if (key.dataset.isPressed !== "true") return;
-      key.dataset.isPressed = "false";
+      if (!key._isActive) return;
+      key._isActive = false;
       stopKeyAnimation(key);
-      crack.pause();
-      crack.currentTime = 0;
+      stopSound(key._activeSound);
+      key._activeSound = null;
     }
 
-    document.querySelectorAll(".key").forEach(key => {
+    function syncKeyInput(key) {
+      const pressed = key._activePointers.size > 0 || key._keyboardDown;
+      if (pressed) pressKey(key);
+      else releaseKey(key);
+    }
+
+    keys.forEach(key => {
+      const image = key.querySelector("img");
+      key._baseImageSrc = image ? image.src : "";
+      key._activePointers = new Set();
+      key._particles = new Set();
+      key._keyboardDown = false;
+      key._isActive = false;
+
       key.addEventListener("pointerdown", event => {
         event.preventDefault();
-        key.setPointerCapture?.(event.pointerId);
-        activePointers.add(event.pointerId);
-        pressKey(key);
+        key._activePointers.add(event.pointerId);
+        try {
+          key.setPointerCapture(event.pointerId);
+        } catch (error) {
+          // 포인터 캡처를 지원하지 않는 환경에서도 입력은 유지한다.
+        }
+        syncKeyInput(key);
       });
+
       ["pointerup", "pointercancel", "lostpointercapture"].forEach(type => {
         key.addEventListener(type, event => {
-          activePointers.delete(event.pointerId);
-          releaseKey(key);
+          key._activePointers.delete(event.pointerId);
+          syncKeyInput(key);
         });
       });
+
       key.addEventListener("keydown", event => {
-        if (event.key === "Enter" || event.key === " ") {
+        if ((event.key === "Enter" || event.key === " ") && !event.repeat) {
           event.preventDefault();
-          pressKey(key);
+          key._keyboardDown = true;
+          syncKeyInput(key);
         }
       });
+
       key.addEventListener("keyup", event => {
-        if (event.key === "Enter" || event.key === " ") releaseKey(key);
+        if (event.key === "Enter" || event.key === " ") {
+          key._keyboardDown = false;
+          syncKeyInput(key);
+        }
       });
-      key.addEventListener("blur", () => releaseKey(key));
+
+      key.addEventListener("blur", () => {
+        key._keyboardDown = false;
+        key._activePointers.clear();
+        syncKeyInput(key);
+      });
     });
 
-    let swipeStart = null;
-    const slider = document.querySelector(".slider");
     slider.addEventListener("pointerdown", event => {
       if (event.target.closest(".key")) return;
-      swipeStart = {x: event.clientX, y: event.clientY};
+      swipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
     });
+
     slider.addEventListener("pointerup", event => {
-      if (!swipeStart || event.target.closest(".key")) return;
+      if (!swipeStart || event.pointerId !== swipeStart.pointerId) return;
       const dx = event.clientX - swipeStart.x;
       const dy = event.clientY - swipeStart.y;
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
@@ -489,7 +698,10 @@
       }
       swipeStart = null;
     });
-    slider.addEventListener("pointercancel", () => { swipeStart = null; });
+
+    slider.addEventListener("pointercancel", () => {
+      swipeStart = null;
+    });
 
     updatePage();
   </script>
